@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Echa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url("dedekk.jpg") no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 400px;
+      position: relative;
+      z-index: 1;
+    }
+    input, select, button {
+      margin: 10px 0;
+      padding: 10px;
+      width: 90%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      background: #ee9ca7;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #ff758c;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .result {
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 16px;
+    }
+    .message-box {
+      min-height: 80px;
+      margin: 15px 0;
+      font-size: 15px;
+      line-height: 1.4em;
+      text-align: center;
+    }
+    /* Overlay pop-up musik */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .music-box {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+    .music-box button {
+      margin: 10px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #ee9ca7;
+      color: white;
+      transition: 0.3s;
+    }
+    .music-box button:hover {
+      background: #ff758c;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.9);}
+      to {opacity: 1; transform: scale(1);}
+    }
+     /* Tambahan CSS untuk fade in fade out */
+  .fade-message {
+    opacity: 0;
+    transition: opacity 2s ease;
+  }
+  .fade-message.show {
+    opacity: 1;
+  }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🎂 Selamat Ulang Tahun Echa 🎂</h2>
+    
+    <!-- Step 1: Isi Nama -->
+    <div id="step1">
+      <input type="text" id="nameInput" placeholder="Masukkan nama panggilan" onclick="showMusicOverlay()">
+      <button onclick="checkName()">Next</button>
+      <p id="errorMsg" style="color:red;"></p>
+    </div>
+
+    <!-- Step 2: Pertanyaan Verifikasi -->
+    <div id="step2" class="hidden">
+      <p>Kamu ceweknya Zaky apa bukan?</p>
+      <select id="answerSelect">
+        <option value="">-- Pilih jawaban --</option>
+        <option value="iya">Iya</option>
+        <option value="bukan">Bukan</option>
+      </select>
+      <button onclick="verifyAnswer()">Verifikasi</button>
+      <p class="result" id="verifyResult"></p>
+      <button id="nextMessageBtn" class="hidden" onclick="goToMessages()">Lanjut ➡️</button>
+    </div>
+
+    <!-- Step 3: Pesan -->
+    <div id="stepMessage" class="hidden">
+      <div id="messageBox" class="message-box"></div>
+    </div>
+  </div>
+
+  <!-- Overlay Music Choice -->
+  <div id="musicOverlay" class="overlay hidden">
+    <div class="music-box">
+      <p>Mau pake background music nggak?</p>
+      <button onclick="startMusic()">Iya</button>
+      <button onclick="skipMusic()">Nggak</button>
+    </div>
+  </div>
+
+  <!-- Musik -->
+  <audio id="bgMusic" preload="none" loop>
+  <source src="lala.mp3" type="audio/mpeg">
+  Browser kamu tidak mendukung audio.
+</audio>
+
+
+  <!-- Hanya bagian JS yang diperbaiki -->
+<script>
+let musicAsked = false;
+const music = document.getElementById("bgMusic");
+
+// ✨ Pesan yang bisa kamu ganti sendiri
+const messages = [
+  "Haii dedek manis 🤍",
+  "Hari ini spesial banget karena ulang tahun kamu 🎉",
+  "Aku mau bilang terima kasih udah selalu ada buat aku 🥺",
+  "Semoga panjang umur, sehat selalu, dan makin cantik tiap hari 😘",
+  "Pokoknya aku sayang banget sama kamu 💖"
+];
+
+function showMusicOverlay() {
+  if (!musicAsked) {
+    document.getElementById("musicOverlay").classList.remove("hidden");
+    musicAsked = true;
+  }
+}
+
+// klik tombol "Iya"
+function startMusic() {
+  music.currentTime = 0;
+  music.play().catch(err => console.log("Autoplay diblokir:", err));
+  closeOverlay();
+}
+
+// klik tombol "Nggak"
+function skipMusic() {
+  music.pause();
+  music.currentTime = 0;
+  closeOverlay();
+}
+
+function closeOverlay() {
+  document.getElementById("musicOverlay").classList.add("hidden");
+  document.getElementById("nameInput").focus();
+}
+
+function checkName() {
+  const name = document.getElementById("nameInput").value.trim().toLowerCase();
+  const errorMsg = document.getElementById("errorMsg");
+
+  if (name === "dedek") {
+    errorMsg.textContent = "";
+    document.getElementById("step1").classList.add("hidden");
+    document.getElementById("step2").classList.remove("hidden");
+  } else {
+    errorMsg.textContent = "Nama salah! coba masukin nama panggilan lain.";
+  }
+}
+
+function verifyAnswer() {
+  const answer = document.getElementById("answerSelect").value;
+  const result = document.getElementById("verifyResult");
+  const nextBtn = document.getElementById("nextMessageBtn");
+
+  if (answer === "iya") {
+    result.textContent = "✅ Terverifikasi";
+    result.style.color = "green";
+    nextBtn.classList.remove("hidden");
+  } else if (answer === "bukan") {
+    result.textContent = "❌ Tidak Terverifikasi";
+    result.style.color = "red";
+    nextBtn.classList.add("hidden");
+  } else {
+    result.textContent = "Pilih dulu jawabannya!";
+    result.style.color = "orange";
+    nextBtn.classList.add("hidden");
+  }
+}
+
+function goToMessages() {
+  document.getElementById("step2").classList.add("hidden");
+  document.getElementById("stepMessage").classList.remove("hidden");
+  showMessages();
+}
+
+// --- Pesan dengan efek ngetik (typewriter) ---
+let msgIndex = 0;
+let charIndex = 0;
+const messageBox = document.getElementById("messageBox");
+
+function showMessages() {
+  msgIndex = 0;
+  charIndex = 0;
+  messageBox.innerHTML = "";
+  typeMessage();
+}
+
+function typeMessage() {
+  if (msgIndex < messages.length) {
+    const currentMsg = messages[msgIndex];
+
+    if (charIndex === 0) {
+      const p = document.createElement("p");
+      p.setAttribute("id", "msg-" + msgIndex);
+      messageBox.appendChild(p);
+    }
+
+    const p = document.getElementById("msg-" + msgIndex);
+
+    if (charIndex < currentMsg.length) {
+      p.textContent += currentMsg.charAt(charIndex);
+      charIndex++;
+      setTimeout(typeMessage, 80);
+    } else {
+      msgIndex++;
+      charIndex = 0;
+      setTimeout(typeMessage, 1200);
+    }
+  }
+}
+</script>
+</body>
+</html>
